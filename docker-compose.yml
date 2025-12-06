@@ -1,0 +1,29 @@
+
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pdf_backend
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./docker/model_cache:/models
+    ports:
+      - "5000:5000"
+    environment:
+      - TRANSFORMERS_CACHE=/models/transformers
+      - HF_HOME=/models/hf
+      - TORCH_HOME=/models/torch
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pdf_frontend
+    depends_on:
+      - backend
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
